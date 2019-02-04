@@ -1,5 +1,16 @@
 
 # install.packages("drc")
+library(drc)
+## Listing all functions  ----
+getMeanFunctions()
+## Listing all functions with 4 parameters
+getMeanFunctions(4)
+## Listing all (log-)logistic functions
+getMeanFunctions(fname = "L")
+## Listing all three-parameter (log-)logistic or Weibull functions
+getMeanFunctions(3, fname = c("LL", "W"))
+## Listing all four-parameter (log-)logistic or Weibull functions
+getMeanFunctions(4, fname = c("LL", "W"))
 
 
 # Example 1: A cautionary example  -----
@@ -150,4 +161,26 @@ plot(m.5para.c2, main="5-parameter; with contraints",
      xlab="Concentration (uM)", ylab="% control", 
      col="royalblue", pch=16)
 
+
+# from rdocumentation.org  ----
+# https://www.rdocumentation.org/packages/drc/versions/3.0-1/topics/secalonic
+## Fitting a four-parameter log-logistic model
+secalonic.m1 <- drm(rootl ~ dose, data = secalonic, fct = LL.4())
+summary(secalonic.m1)
+
+## Fitting a three-parameter log-logistic model
+##  lower limit fixed at 0
+secalonic.m2 <- drm(rootl ~ dose, data = secalonic, fct = LL.3())
+summary(secalonic.m1)
+
+## Comparing logistic and log-logistic models
+## (Figure 1 in Ritz (2009))
+secalonic.LL4 <- drm(rootl ~ dose, data = secalonic, fct = LL.4())
+secalonic.L4 <- drm(rootl ~ dose, data = secalonic, fct = L.4())
+
+plot(secalonic.LL4, broken=TRUE, ylim=c(0,7), xlab="Dose (mM)", ylab="Root length (cm)", cex=1.2, cex.axis=1.2, cex.lab=1.2, lwd=2)
+
+plot(secalonic.L4, broken=TRUE, ylim=c(0,7), add=TRUE, type="none", lty=2, lwd=2)
+
+abline(h=coef(secalonic.L4)[3], lty=3, lwd=2)
 
