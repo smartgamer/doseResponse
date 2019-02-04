@@ -105,4 +105,49 @@ selenium.EDres <- ED(selenium.LL.2.1, c(50), interval = "delta",
 multcomp = TRUE, display = FALSE)
 confint(glht(selenium.EDres[["EDmultcomp"]]))
     
-  
+
+#drc to fit a 4-parameter or 5-parameter dose-response curve with/without contraints" ----
+#https://rpubs.com/rainyrainy/105823
+rm(list=ls())
+library(drc)
+
+data = read.table("data.txt", header=T, sep="\t")
+colnames(data) = c("Conc.uM", "log.Conc", "Pctrl")
+
+plot(data$Conc.uM, data$Pctrl, 
+     main="With original concentration", xlab="Concentration (uM)", ylab="% control", col="deeppink", pch=16)
+plot(data$log.Conc, data$Pctrl, 
+     main="With log concentration", xlab="Log concentration", ylab="% control", col="skyblue4", pch=16)
+
+# Fit a 4-parameter model with no constrain  -----
+m.4para = drm(Pctrl ~ Conc.uM, data = data, fct = L.4())
+summary(m.4para)
+plot(m.4para, 
+     main="4-parameter; no contraints", 
+     xlab="Concentration (uM)", ylab="% control", 
+     col="blue", pch=16)
+
+# Fit a 5-parameter model with no constrain
+m.5para = drm(Pctrl ~ Conc.uM, data = data, fct = L.5())
+summary(m.5para)
+plot(m.5para, main="5-parameter; no contraints", 
+     xlab="Concentration (uM)", ylab="% control", 
+     col="forestgreen", pch=16)
+
+# Fit a 4-parameter model with 1000≤d≤2000 and −17≤e≤−1  ----
+m.4para.c1 = drm(Pctrl ~ Conc.uM, data = data, fct = L.4(), 
+              lowerl=c(NA, NA, 1000, -17), upperl=c(NA, NA, 2000, -1))
+summary(m.4para.c1)
+plot(m.4para.c1, main="5-parameter; with contraints", 
+     xlab="Concentration (uM)", ylab="% control", 
+     col="orangered", pch=16)
+
+# Fit a 5-parameter model with 1000≤d≤2000 and −17≤e≤−1 and 0≤f≤1
+m.5para.c2 = drm(Pctrl ~ Conc.uM, data = data, fct = L.5(), 
+              lowerl=c(NA, NA, 1000, -17, 0), upperl=c(NA, NA, 2000, -1, 1))
+summary(m.5para.c2)
+plot(m.5para.c2, main="5-parameter; with contraints", 
+     xlab="Concentration (uM)", ylab="% control", 
+     col="royalblue", pch=16)
+
+
